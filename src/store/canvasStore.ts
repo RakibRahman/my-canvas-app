@@ -1,7 +1,17 @@
-import { create } from 'zustand'
+import Konva from "konva";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
+import { create } from 'zustand';
 
-export const useCanvasStore = create((set) => ({
+
+
+
+type Store = {
+    selectedItem: Konva.Stage | Shape<ShapeConfig> | null
+    setSelectedItem: (payload: Konva.Stage | Shape<ShapeConfig>) => void
+  }
+
+export const useCanvasStore = create<Store>()((set) => ({
   selectedItem: null,
-  setSelectedItem: (payload:any) => set((state:any) => ({ selectedItem: payload})),
+  setSelectedItem: (payload ) => set((state) => ({ selectedItem: payload})),
 
 }))
