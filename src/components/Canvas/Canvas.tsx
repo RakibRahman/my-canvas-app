@@ -1,18 +1,26 @@
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { nanoid } from "nanoid";
-import { useRef, useState } from "react";
-import { Layer, Rect, Stage } from "react-konva";
+import { useEffect, useRef, useState } from "react";
+import { KonvaNodeComponent, Layer, Rect, Stage, Transformer } from "react-konva";
+import { useCanvasStore } from "../../store/canvasStore";
 
 const ColoredRect = () => {
   const [color, setColor] = useState("green");
 
+
   const handleClick = () => {
     setColor(Konva.Util.getRandomColor());
+    
   };
 
+
+
   return (
-    <Rect
+   
+    <>
+     <Rect
+
       id={`rect-${nanoid()}`}
       x={20}
       y={20}
@@ -26,18 +34,36 @@ const ColoredRect = () => {
         console.log(e);
       }}
     />
+ 
+    </>
   );
 };
 
 export const Canvas = () => {
-  const [selectedItem, setSelectedItem] = useState<
-    Konva.Stage | Shape<ShapeConfig>
-  >();
+//   const [selectedItem, setSelectedItem] = useState<
+//     Konva.Stage | Shape<ShapeConfig>
+//   >();
 
   const [shapes, setShapes] = useState<any>([]);
-  console.log(selectedItem);
+//   console.log(selectedItem);
   const stageRef = useRef<Konva.Stage>(null);
   const layerRef = useRef<Konva.Layer>(null);
+  const setSelectedItem = useCanvasStore((state) => state.setSelectedItem)
+
+  const selectedItem = useCanvasStore((state) => state.selectedItem)
+  const trRef = useRef<Konva.Transformer>(null);
+
+
+
+  useEffect(() => {
+    if (selectedItem) {
+      // we need to attach transformer manually
+      trRef.current?.nodes([selectedItem]);
+      trRef.current?.getLayer()?.batchDraw();
+
+    console.log(selectedItem)
+    }
+  }, [selectedItem]);
 
   return (
     <div
@@ -68,14 +94,14 @@ export const Canvas = () => {
       </button>
       <button
         onClick={() => {
-          setShapes((s) => [...s, <ColoredRect />]);
+          setShapes((s:any) => [...s, <ColoredRect />]);
         }}
       >
         add Rect
       </button>
 
       <Stage
-        width={400}
+        width={800}
         height={800}
         onClick={(e) => {
           // console.log(e)
@@ -83,7 +109,11 @@ export const Canvas = () => {
         }}
         ref={stageRef}
       >
-        <Layer ref={layerRef}>{...shapes}</Layer>
+        <Layer ref={layerRef}>{...shapes}
+        
+        
+        <Transformer ref={trRef} />
+        </Layer>
       </Stage>
     </div>
   );
