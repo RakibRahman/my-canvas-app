@@ -16,23 +16,55 @@ export const Canvas = () => {
 
   const selectedItem = useCanvasStore((state) => state.selectedItem);
   const trRef = useRef<Konva.Transformer>(null);
+  const [saveStage,setSaveStage] = useState({});
+
 
   useEffect(() => {
     if (selectedItem) {
+
       // we need to attach transformer manually
       trRef.current?.nodes([selectedItem]);
       trRef.current?.getLayer()?.batchDraw();
     }
   }, [selectedItem]);
 
-  console.log(selectedItem);
+  console.log(saveStage);
+
 
   return (
     <div
       style={{
         border: "1px solid red",
+        padding:'20px',
+        
       }}
+      id="mainContainer"
     >
+
+      <button onClick={()=>
+      {
+        if(stageRef.current)
+        localStorage.setItem('savedStage',stageRef.current?.toJSON())
+        setSaveStage(stageRef.current?.toJSON()!)
+      }}>
+        Save
+      </button>
+
+      <button onClick={()=>{
+        const savedData = localStorage.getItem('savedStage')
+        if(saveStage){
+          Konva.Node.create(savedData, "mainContainer");
+          // let newLayer = Konva.Node.create(savedData, 'container');
+          // stageRef?.current?.destroyChildren()
+          
+          // stageRef?.current?.add(newLayer);
+
+        }
+      }}>Load last save</button>
+
+      <button onClick={()=>{
+        stageRef.current?.clear()
+      }}>Clear</button>
       <button
         onClick={() => {
           setShapes((s: any) => [...s, <Circle />]);
@@ -58,16 +90,22 @@ export const Canvas = () => {
 
       <button
         onClick={() => {
-          setShapes((s: any) => [...s, <Text />]);
+          setShapes((s: any) => [
+            ...s,
+            <Text
+              stageContainer={stageRef.current?.container()!}
+              transformerRef={trRef}
+            />,
+          ]);
         }}
       >
         add Text
       </button>
 
-
       <Stage
-        id="mainContainer"
-        width={800}
+      
+        // id="mainContainer"
+        width={window.innerWidth}
         height={800}
         onClick={(e) => {
           // console.log(e)

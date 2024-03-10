@@ -6,6 +6,12 @@ import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './store/store.ts'
 
+declare global {
+  interface Document {
+      documentMode?: any;
+  }
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
    <Provider store={store}> <App /></Provider>
