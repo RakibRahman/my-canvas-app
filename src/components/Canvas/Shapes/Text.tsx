@@ -2,7 +2,6 @@ import Konva from "konva";
 import React, { RefObject, useRef } from "react";
 
 import { Text as KonvaText } from "react-konva";
-import { useCanvasStore } from "../../../store/canvasStore";
 
 declare global {
   interface Document {
@@ -20,11 +19,6 @@ export const Text: React.FC<TextComponentProps> = ({
   transformerRef,
 }) => {
   const textRef = useRef<Konva.Text>(null);
-  // const trRef = useRef<Konva.Transformer>(null);
-  const selectedItem = useCanvasStore((state) => state.selectedItem);
-
-
-  console.log('selectedItem',transformerRef?.current);
 
   return (
     <>

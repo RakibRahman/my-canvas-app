@@ -1,11 +1,12 @@
 import Konva from "konva";
 import { useEffect, useRef, useState } from "react";
-import { Layer, Stage, Transformer } from "react-konva";
+import { Group, Layer, Stage, Transformer } from "react-konva";
 import { useCanvasStore } from "../../store/canvasStore";
 import { Rectangle } from "./Shapes/Rectangle";
 import { Circle } from "./Shapes/Circle";
 import { Ellipse } from "./Shapes/Ellipse";
 import { Text } from "./Shapes/Text";
+import { stageStyle, useStage } from "../../hooks/useStage";
 
 export const Canvas = () => {
   const [shapes, setShapes] = useState<any>([]);
@@ -15,56 +16,65 @@ export const Canvas = () => {
   const setSelectedItem = useCanvasStore((state) => state.setSelectedItem);
 
   const selectedItem = useCanvasStore((state) => state.selectedItem);
+  const isStageDraggable = useCanvasStore((state) => state.dragStage);
+  const handleDragStage = useCanvasStore((state) => state.handleDragStage);
+  const { stageScale, stageX, stageY } = useCanvasStore((state) => state.zoom);
   const trRef = useRef<Konva.Transformer>(null);
-  const [saveStage,setSaveStage] = useState({});
-
+  const [saveStage, setSaveStage] = useState({});
+  const { handleWheel } = useStage();
 
   useEffect(() => {
     if (selectedItem) {
-
       // we need to attach transformer manually
       trRef.current?.nodes([selectedItem]);
       trRef.current?.getLayer()?.batchDraw();
     }
   }, [selectedItem]);
 
-  console.log(saveStage);
-
+  console.log({ selectedItem });
 
   return (
     <div
       style={{
         border: "1px solid red",
-        padding:'20px',
-        
+        padding: "20px",
+        overflow: "hidden",
       }}
-      id="mainContainer"
+      id="stageContainer"
     >
-
-      <button onClick={()=>
-      {
-        if(stageRef.current)
-        localStorage.setItem('savedStage',stageRef.current?.toJSON())
-        setSaveStage(stageRef.current?.toJSON()!)
-      }}>
+      <button
+        onClick={() => {
+          if (stageRef.current)
+            localStorage.setItem("savedStage", stageRef.current?.toJSON());
+          setSaveStage(stageRef.current?.toJSON()!);
+          console.log(layerRef.current);
+        }}
+      >
         Save
       </button>
 
-      <button onClick={()=>{
-        const savedData = localStorage.getItem('savedStage')
-        if(saveStage){
-          Konva.Node.create(savedData, "mainContainer");
-          // let newLayer = Konva.Node.create(savedData, 'container');
-          // stageRef?.current?.destroyChildren()
-          
-          // stageRef?.current?.add(newLayer);
+      <button
+        onClick={() => {
+          const savedData = localStorage.getItem("savedStage");
+          if (saveStage) {
+            Konva.Node.create(savedData, "mainContainer");
+            // let newLayer = Konva.Node.create(savedData, 'mainContainer');
+            // stageRef?.current?.destroyChildren()
 
-        }
-      }}>Load last save</button>
+            // stageRef?.current?.add(newLayer);
+          }
+        }}
+      >
+        Load last save
+      </button>
 
-      <button onClick={()=>{
-        stageRef.current?.clear()
-      }}>Clear</button>
+      <button
+        onClick={() => {
+          stageRef.current?.clear();
+        }}
+      >
+        Clear
+      </button>
       <button
         onClick={() => {
           setShapes((s: any) => [...s, <Circle />]);
@@ -101,14 +111,51 @@ export const Canvas = () => {
       >
         add Text
       </button>
+      <button
+        style={{
+          background: isStageDraggable ? "limegreen" : "white",
+        }}
+        onClick={() => {
+          handleDragStage();
+        }}
+      >
+        Drag Stage
+      </button>
+      <button
+        style={{
+          background: selectedItem?.id ? "red" : "initial",
+          color: selectedItem?.id ? "white" : "black",
+        }}
+        disabled={selectedItem?.id ? false : true}
+        onClick={() => {
+          trRef.current?.hide();
+
+          // const tr = layerRef?.current?.find('Transformer').toArray().find(tr => tr.nodes()[0] === currentShape);
+          // tr.destroy();
+          // currentShape.destroy();
+          // layer.draw();
+          selectedItem?.destroy();
+          layerRef.current?.draw();
+        }}
+      >
+        Delete
+      </button>
 
       <Stage
-      
-        // id="mainContainer"
-        width={window.innerWidth}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        x={stageX}
+        y={stageY}
+        draggable={isStageDraggable}
+        style={stageStyle}
+        onWheel={handleWheel}
+        id="mainContainer"
+        width={1200}
         height={800}
         onClick={(e) => {
           // console.log(e)
+          trRef.current?.show();
+
           setSelectedItem(e.target);
         }}
         ref={stageRef}

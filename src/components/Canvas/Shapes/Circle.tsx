@@ -13,6 +13,7 @@ export const Circle = () => {
       stroke={"black"}
       strokeWidth={4}
       draggable
+      // listening={false}
     />
   );
 };

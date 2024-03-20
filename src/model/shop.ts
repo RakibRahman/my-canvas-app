@@ -11,3 +11,4 @@ export interface Products{
 export interface ShopState{
     products:Products[];
 }
+
