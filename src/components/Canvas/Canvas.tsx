@@ -9,7 +9,7 @@ import { Text } from "./Shapes/Text";
 import { stageStyle, useStage } from "../../hooks/useStage";
 
 export const Canvas = () => {
-  const [shapes, setShapes] = useState<any>([]);
+  const [shapes, setShapes] = useState<Konva.Shape[]>([]);
 
   const stageRef = useRef<Konva.Stage>(null);
   const layerRef = useRef<Konva.Layer>(null);
@@ -31,7 +31,7 @@ export const Canvas = () => {
     }
   }, [selectedItem]);
 
-  console.log({ selectedItem: selectedItem });
+  console.log({ selectedItem });
 
   useEffect(() => {
     const padding = 30;
@@ -200,10 +200,10 @@ export const Canvas = () => {
         <Layer ref={layerRef}
         
         onDragMove={(e)=>{
-          layerDragMove(e,stageRef.current,layerRef.current)
+          layerDragMove(e,stageRef.current!,layerRef.current!)
         }}
         onDragEnd={(e)=>{
-          layerDragEnd(layerRef.current)
+          layerDragEnd(layerRef.current!)
         }}
         >
           {...shapes}

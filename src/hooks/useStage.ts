@@ -1,13 +1,45 @@
-import { KonvaEventObject } from 'konva/lib/Node';
-import { useEffect } from 'react';
-import { useCanvasStore } from '../store/canvasStore';
 import Konva from 'konva';
+import { KonvaEventObject } from 'konva/lib/Node';
+import { useCanvasStore } from '../store/canvasStore';
 
 const BG_IMAGE_URL = 'https://img.freepik.com/free-photo/abstract-blue-extruded-voronoi-blocks-background-minimal-light-clean-corporate-wall-3d-geometric-surface-illustration-polygonal-elements-displacement_1217-2510.jpg?w=1380&t=st=1711346586~exp=1711347186~hmac=8bfdb9381b6aafb5b32a44f7eb8555bdf91edb25aa4916ebc93c3e2f158214c6'
 export const stageStyle = {
   backgroundImage: `url(${BG_IMAGE_URL})`,
   backgroundRepeat: 'no-repeat',
   backgroundSize: 'cover',
+}
+type Stage = Konva.Stage;
+type Layer = Konva.Layer;
+type LayerDragEvent = KonvaEventObject<DragEvent>;
+type KonvaShape = Konva.Shape
+
+type Vertical = number | Vertical[];
+type Horizontal = number | Horizontal[];
+type LineGuide = {
+  lineGuide: number;
+  offset: number;
+  orientation: string;
+  snap: string;
+}
+
+type Result = Omit<LineGuide, 'orientation'> & { diff: number };
+
+type LineGuideStops = {
+  vertical: number[];
+  horizontal: number[];
+}
+
+type ItemBounds = {
+  vertical: {
+    guide: number,
+    offset: number,
+    snap: string
+  }[];
+  horizontal: {
+    guide: number,
+    offset: number,
+    snap: string
+  }[];
 }
 
 export const useStage = () => {
@@ -44,14 +76,16 @@ export const useStage = () => {
   };
 
 
-
-  function getLineGuideStops(skipShape: any, stage: any) {
+  function getLineGuideStops(skipShape: KonvaShape, stage: Stage) {
     // we can snap to stage borders and the center of the stage
-    var vertical = [0, stage.width() / 2, stage.width()];
-    var horizontal = [0, stage.height() / 2, stage.height()];
+    const vertical: Vertical = [0, stage.width() / 2, stage.width()];
+    const horizontal: Horizontal = [0, stage.height() / 2, stage.height()];
 
     // and we snap over edges and center of each object on the canvas
-    stage.find('.object').forEach((guideItem: any) => {
+
+
+    stage.find('.object').forEach((guideItem) => {
+
       if (guideItem === skipShape) {
         return;
       }
@@ -67,7 +101,7 @@ export const useStage = () => {
   }
 
 
-  function getObjectSnappingEdges(node: any) {
+  function getObjectSnappingEdges(node: KonvaShape) {
     var box = node.getClientRect();
     var absPos = node.absolutePosition();
 
@@ -112,13 +146,16 @@ export const useStage = () => {
 
 
   // find all snapping possibilities
-  function getGuides(lineGuideStops: any, itemBounds: any) {
-    var resultV: any = [];
-    var resultH: any = [];
+  function getGuides(lineGuideStops: LineGuideStops, itemBounds: ItemBounds) {
+    const resultV: Result[] = [];
+    const resultH: Result[] = [];
 
-    lineGuideStops.vertical.forEach((lineGuide: any) => {
-      itemBounds.vertical.forEach((itemBound: any) => {
-        var diff = Math.abs(lineGuide - itemBound.guide);
+    console.log('first', itemBounds)
+
+
+    lineGuideStops.vertical.forEach((lineGuide) => {
+      itemBounds.vertical.forEach((itemBound) => {
+        const diff = Math.abs(lineGuide - itemBound.guide);
         // if the distance between guild line and object snap point is close we can consider this for snapping
         if (diff < GUIDELINE_OFFSET) {
           resultV.push({
@@ -148,8 +185,8 @@ export const useStage = () => {
     var guides = [];
 
     // find closest snap
-    var minV = resultV.sort((a: any, b: any) => a.diff - b.diff)[0];
-    var minH = resultH.sort((a: any, b: any) => a.diff - b.diff)[0];
+    var minV = resultV.sort((a, b) => a.diff - b.diff)[0];
+    var minH = resultH.sort((a, b) => a.diff - b.diff)[0];
     if (minV) {
       guides.push({
         lineGuide: minV.lineGuide,
@@ -169,8 +206,9 @@ export const useStage = () => {
     return guides;
   }
 
-  function drawGuides(guides: any, layer: any) {
-    guides.forEach((lg: any) => {
+  function drawGuides(guides: LineGuide[], layer: Konva.Layer) {
+
+    guides.forEach((lg) => {
       if (lg.orientation === 'H') {
         var line = new Konva.Line({
           points: [-6000, 0, 6000, 0],
@@ -203,19 +241,20 @@ export const useStage = () => {
 
 
 
-  const layerDragMove = (e, stage: any, layer: any) => {
+  const layerDragMove = (e: LayerDragEvent, stage: Stage, layer: Layer) => {
 
 
     // clear all previous lines on the screen
     layer.find('.guid-line').forEach((l) => l.destroy());
 
+    const currentTargetedShape = e.target as KonvaShape
     // find possible snapping lines
-    var lineGuideStops = getLineGuideStops(e.target, stage);
+    const lineGuideStops = getLineGuideStops(currentTargetedShape, stage);
     // find snapping points of current object
-    var itemBounds = getObjectSnappingEdges(e.target);
+    const itemBounds = getObjectSnappingEdges(currentTargetedShape);
 
     // now find where can we snap current object
-    var guides = getGuides(lineGuideStops, itemBounds);
+    const guides = getGuides(lineGuideStops as LineGuideStops, itemBounds);
 
     // do nothing of no snapping
     if (!guides.length) {
@@ -224,7 +263,7 @@ export const useStage = () => {
 
     drawGuides(guides, layer);
 
-    var absPos = e.target.absolutePosition();
+    const absPos = e.target.absolutePosition();
     // now force object position
     guides.forEach((lg) => {
       switch (lg.snap) {
@@ -274,9 +313,9 @@ export const useStage = () => {
 
   }
 
-  const layerDragEnd = (layer:any)=>{
+  const layerDragEnd = (layer: Layer) => {
     layer.find('.guid-line').forEach((l) => l.destroy());
   }
-  return { handleWheel,layerDragMove,layerDragEnd };
+  return { handleWheel, layerDragMove, layerDragEnd };
 
 }
