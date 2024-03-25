@@ -76,7 +76,7 @@ export const useStage = () => {
   };
 
 
-  function getLineGuideStops(skipShape: KonvaShape, stage: Stage) {
+  const getLineGuideStops = (skipShape: KonvaShape, stage: Stage) => {
     // we can snap to stage borders and the center of the stage
     const vertical: Vertical = [0, stage.width() / 2, stage.width()];
     const horizontal: Horizontal = [0, stage.height() / 2, stage.height()];
@@ -89,7 +89,7 @@ export const useStage = () => {
       if (guideItem === skipShape) {
         return;
       }
-      var box = guideItem.getClientRect();
+      const box = guideItem.getClientRect();
       // and we can snap to all edges of shapes
       vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
       horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
@@ -101,9 +101,9 @@ export const useStage = () => {
   }
 
 
-  function getObjectSnappingEdges(node: KonvaShape) {
-    var box = node.getClientRect();
-    var absPos = node.absolutePosition();
+  const getObjectSnappingEdges = (node: KonvaShape) => {
+    const box = node.getClientRect();
+    const absPos = node.absolutePosition();
 
     return {
       vertical: [
@@ -146,11 +146,9 @@ export const useStage = () => {
 
 
   // find all snapping possibilities
-  function getGuides(lineGuideStops: LineGuideStops, itemBounds: ItemBounds) {
+  const getGuides = (lineGuideStops: LineGuideStops, itemBounds: ItemBounds) => {
     const resultV: Result[] = [];
     const resultH: Result[] = [];
-
-    console.log('first', itemBounds)
 
 
     lineGuideStops.vertical.forEach((lineGuide) => {
@@ -170,7 +168,7 @@ export const useStage = () => {
 
     lineGuideStops.horizontal.forEach((lineGuide: any) => {
       itemBounds.horizontal.forEach((itemBound: any) => {
-        var diff = Math.abs(lineGuide - itemBound.guide);
+        const diff = Math.abs(lineGuide - itemBound.guide);
         if (diff < GUIDELINE_OFFSET) {
           resultH.push({
             lineGuide: lineGuide,
@@ -182,11 +180,11 @@ export const useStage = () => {
       });
     });
 
-    var guides = [];
+    const guides = [];
 
     // find closest snap
-    var minV = resultV.sort((a, b) => a.diff - b.diff)[0];
-    var minH = resultH.sort((a, b) => a.diff - b.diff)[0];
+    const minV = resultV.sort((a, b) => a.diff - b.diff)[0];
+    const minH = resultH.sort((a, b) => a.diff - b.diff)[0];
     if (minV) {
       guides.push({
         lineGuide: minV.lineGuide,
@@ -206,11 +204,11 @@ export const useStage = () => {
     return guides;
   }
 
-  function drawGuides(guides: LineGuide[], layer: Konva.Layer) {
+  const drawGuides = (guides: LineGuide[], layer: Layer) => {
 
     guides.forEach((lg) => {
       if (lg.orientation === 'H') {
-        var line = new Konva.Line({
+        const line = new Konva.Line({
           points: [-6000, 0, 6000, 0],
           stroke: 'rgb(0, 161, 255)',
           strokeWidth: 1,
@@ -223,7 +221,7 @@ export const useStage = () => {
           y: lg.lineGuide,
         });
       } else if (lg.orientation === 'V') {
-        var line = new Konva.Line({
+        const line = new Konva.Line({
           points: [0, -6000, 0, 6000],
           stroke: 'rgb(0, 161, 255)',
           strokeWidth: 1,
