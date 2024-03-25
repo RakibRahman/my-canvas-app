@@ -21,7 +21,7 @@ export const Canvas = () => {
   const { stageScale, stageX, stageY } = useCanvasStore((state) => state.zoom);
   const trRef = useRef<Konva.Transformer>(null);
   const [saveStage, setSaveStage] = useState({});
-  const { handleWheel,layerDragMove,layerDragEnd } = useStage();
+  const { handleWheel,layerDragMove,layerDragEnd ,copyShape} = useStage();
 
   useEffect(() => {
     if (selectedItem) {
@@ -171,7 +171,9 @@ export const Canvas = () => {
       <button
         onClick={() => {
           if (selectedItem) {
-            selectedItem.clone();
+            console.log(selectedItem.getClassName())
+copyShape(layerRef.current!,selectedItem)
+            
           }
         }}
       >

@@ -1,6 +1,8 @@
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { useCanvasStore } from '../store/canvasStore';
+import { Shape, ShapeConfig } from 'konva/lib/Shape';
+import { Circle } from 'react-konva';
 
 const BG_IMAGE_URL = 'https://img.freepik.com/free-photo/abstract-blue-extruded-voronoi-blocks-background-minimal-light-clean-corporate-wall-3d-geometric-surface-illustration-polygonal-elements-displacement_1217-2510.jpg?w=1380&t=st=1711346586~exp=1711347186~hmac=8bfdb9381b6aafb5b32a44f7eb8555bdf91edb25aa4916ebc93c3e2f158214c6'
 export const stageStyle = {
@@ -313,7 +315,31 @@ export const useStage = () => {
 
   const layerDragEnd = (layer: Layer) => {
     layer.find('.guid-line').forEach((l) => l.destroy());
+  };
+
+
+
+  const copyShape = (layer:Layer,selectedItem: Konva.Stage | Shape<ShapeConfig>)=>{
+
+
+    const shapeName = selectedItem.getClassName();
+
+    if(shapeName==='Circle'){
+      layer.add(new Konva.Circle({
+        x:selectedItem.attrs.x+10,
+        y:selectedItem.attrs.y+10,
+        fill:selectedItem.attrs.fill,
+        radius:50,
+        name:"object",
+        stroke:"black",
+        strokeWidth:4,
+        draggable:true
+      }))
+    }
+
+
   }
-  return { handleWheel, layerDragMove, layerDragEnd };
+
+  return { handleWheel, layerDragMove, layerDragEnd ,copyShape};
 
 }
