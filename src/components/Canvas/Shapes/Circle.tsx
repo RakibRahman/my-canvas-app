@@ -10,10 +10,14 @@ export const Circle = () => {
       fill="blue"
       // x: stageRef?.current?.width()! / 2,
       // y: stageRef?.current?.height()! / 2,
+      name="object"
       stroke={"black"}
       strokeWidth={4}
       draggable
       // listening={false}
+      onClick={(e)=>{
+        console.log('hello from circle')
+      }}
     />
   );
 };

@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { useEffect, useRef, useState } from "react";
-import { Group, Layer, Stage, Transformer } from "react-konva";
+import { Group, Layer, Shape, Stage, Transformer } from "react-konva";
 import { useCanvasStore } from "../../store/canvasStore";
 import { Rectangle } from "./Shapes/Rectangle";
 import { Circle } from "./Shapes/Circle";
@@ -21,7 +21,7 @@ export const Canvas = () => {
   const { stageScale, stageX, stageY } = useCanvasStore((state) => state.zoom);
   const trRef = useRef<Konva.Transformer>(null);
   const [saveStage, setSaveStage] = useState({});
-  const { handleWheel } = useStage();
+  const { handleWheel,layerDragMove,layerDragEnd } = useStage();
 
   useEffect(() => {
     if (selectedItem) {
@@ -31,7 +31,39 @@ export const Canvas = () => {
     }
   }, [selectedItem]);
 
-  console.log({ selectedItem });
+  console.log({ selectedItem: selectedItem });
+
+  useEffect(() => {
+    const padding = 30;
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+
+    for (var i = 0; i < width / padding; i++) {
+      layerRef?.current?.add(
+        new Konva.Line({
+          points: [
+            Math.round(i * padding) + 0.5,
+            0,
+            Math.round(i * padding) + 0.5,
+            height,
+          ],
+          stroke: "#ddd",
+          strokeWidth: 1,
+        })
+      );
+    }
+
+    layerRef?.current?.add(new Konva.Line({ points: [0, 0, 10, 10] }));
+    for (var j = 0; j < height / padding; j++) {
+      layerRef?.current?.add(
+        new Konva.Line({
+          points: [0, Math.round(j * padding), width, Math.round(j * padding)],
+          stroke: "#ddd",
+          strokeWidth: 0.5,
+        })
+      );
+    }
+  }, []);
 
   return (
     <div
@@ -129,16 +161,21 @@ export const Canvas = () => {
         disabled={selectedItem?.id ? false : true}
         onClick={() => {
           trRef.current?.hide();
-
-          // const tr = layerRef?.current?.find('Transformer').toArray().find(tr => tr.nodes()[0] === currentShape);
-          // tr.destroy();
-          // currentShape.destroy();
-          // layer.draw();
           selectedItem?.destroy();
           layerRef.current?.draw();
         }}
       >
         Delete
+      </button>
+
+      <button
+        onClick={() => {
+          if (selectedItem) {
+            selectedItem.clone();
+          }
+        }}
+      >
+        Copy
       </button>
 
       <Stage
@@ -147,7 +184,7 @@ export const Canvas = () => {
         x={stageX}
         y={stageY}
         draggable={isStageDraggable}
-        style={stageStyle}
+        // style={stageStyle}
         onWheel={handleWheel}
         id="mainContainer"
         width={1200}
@@ -160,7 +197,15 @@ export const Canvas = () => {
         }}
         ref={stageRef}
       >
-        <Layer ref={layerRef}>
+        <Layer ref={layerRef}
+        
+        onDragMove={(e)=>{
+          layerDragMove(e,stageRef.current,layerRef.current)
+        }}
+        onDragEnd={(e)=>{
+          layerDragEnd(layerRef.current)
+        }}
+        >
           {...shapes}
 
           <Transformer ref={trRef} />

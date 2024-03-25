@@ -28,6 +28,8 @@ export const Rectangle = () => {
         shadowBlur={5}
         onClick={handleClick}
         draggable
+      name="object"
+
        
       />
    

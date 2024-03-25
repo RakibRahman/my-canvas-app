@@ -166,6 +166,8 @@ export const Text: React.FC<TextComponentProps> = ({
         //     });
         //   }
         // }}
+      name="object"
+
       />
     </>
   );
