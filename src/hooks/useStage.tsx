@@ -56,7 +56,8 @@ export const useStage = () => {
   const handleZoom = useCanvasStore((state) => state.handleZoom);
   const drawingMode = useCanvasStore((state)=>state.drawingMode);
   const isPaintingMode = useCanvasStore((state)=>state.isPaintMode);
-  const setPaintMode = useCanvasStore((state)=>state.setPaintMode)
+  const setPaintMode = useCanvasStore((state)=>state.setPaintMode);
+  let lastLine:Konva.Line;
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
@@ -408,10 +409,10 @@ export const useStage = () => {
 
   const handleMouseDownPainting = (e: KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>,stage:Stage,layer:Layer)=>{
     setPaintMode(true);
-console.log('first')
+
     if(stage){
       let pos = stage.getPointerPosition()!;
-      let   lastLine = new Konva.Line({
+         lastLine = new Konva.Line({
            stroke: '#df4b26',
            strokeWidth: 5,
            globalCompositeOperation:
@@ -427,7 +428,20 @@ console.log('first')
  
   }
 
+  const handleMouseUpPainting = (e: KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>,stage:Stage,layer:Layer)=>{
+    if (!isPaintingMode) {
+      return;
+    }
 
-  return { handleWheel, layerDragMove, layerDragEnd ,copyShape,drawGridOnLayer,showContextMenu,handleMouseDownPainting};
+    // prevent scrolling on touch devices
+    e.evt.preventDefault();
+
+    const pos = stage.getPointerPosition()!;
+    var newPoints = lastLine.points().concat([pos.x, pos.y]);
+    lastLine.points(newPoints);
+  }
+
+
+  return { handleWheel, layerDragMove, layerDragEnd ,copyShape,drawGridOnLayer,showContextMenu,handleMouseDownPainting,handleMouseUpPainting};
 
 }

@@ -24,7 +24,7 @@ export const Canvas = () => {
   const isPaintingMode = useCanvasStore((state)=>state.isPaintMode);
   const setPaintMode = useCanvasStore((state)=>state.setPaintMode)
   
-  const { handleWheel, layerDragMove, layerDragEnd, drawGridOnLayer,showContextMenu ,handleMouseDownPainting} =
+  const { handleWheel, layerDragMove, layerDragEnd, drawGridOnLayer,showContextMenu ,handleMouseDownPainting,handleMouseUpPainting} =
     useStage();
 
   useEffect(() => {
@@ -88,6 +88,14 @@ export const Canvas = () => {
         }}
         onTouchEnd={()=>{
           setPaintMode(false);
+        }}
+
+        onMouseMove={(e)=>{
+          handleMouseUpPainting(e,stageRef.current!,layerRef.current!)
+        }}
+        onTouchMove={(e)=>{
+          handleMouseUpPainting(e,stageRef.current!,layerRef.current!)
+
         }}
       >
         <Layer
