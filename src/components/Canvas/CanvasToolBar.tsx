@@ -10,7 +10,9 @@ import {
   PiCursorLight,
   PiHand,
   PiHandFill,
-  PiTextT
+  PiTextT,
+  PiPencilSimpleThin,
+  PiEraser,
 } from "react-icons/pi";
 import { ShapeMenu } from "./ShapeMenu";
 
@@ -30,6 +32,8 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
   const isStageDraggable = useCanvasStore((state) => state.dragStage);
   const handleDragStage = useCanvasStore((state) => state.handleDragStage);
   const setStageCleared = useCanvasStore((state) => state.setStageCleared);
+  const drawingMode = useCanvasStore((state) => state.drawingMode);
+  const setDrawingMode = useCanvasStore((state) => state.setDrawingMode);
 
   return (
     <div className="flex gap-2  my-4 items-center justify-center">
@@ -51,7 +55,6 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
           // Konva.Node.create(savedData, "mainContainer");
           // let newLayer = Konva.Node.create(savedData, 'mainContainer');
           // stageRef?.current?.destroyChildren()
-
           // stageRef?.current?.add(newLayer);
           // }
         }}
@@ -106,6 +109,32 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
         rightIcon={
           isStageDraggable ? <PiHandFill color="#60a5fa" /> : <PiHand />
         }
+      />
+      <Button
+        title="Draw"
+        rightIcon={
+          drawingMode === "brush" ? (
+            <PiPencilSimpleThin color="#60a5fa" />
+          ) : (
+            <PiPencilSimpleThin />
+          )
+        }
+        onClick={() => {
+          setDrawingMode("brush");
+        }}
+      />
+      <Button
+        title="Eraser"
+        rightIcon={
+          drawingMode === "eraser" ? (
+            <PiEraser color="#60a5fa" />
+          ) : (
+            <PiEraser />
+          )
+        }
+        onClick={() => {
+          setDrawingMode("eraser");
+        }}
       />
     </div>
   );

@@ -54,6 +54,9 @@ export const useStage = () => {
   const SCALE_BY = 1.05;
   const GUIDELINE_OFFSET = 5;
   const handleZoom = useCanvasStore((state) => state.handleZoom);
+  const drawingMode = useCanvasStore((state)=>state.drawingMode);
+  const isPaintingMode = useCanvasStore((state)=>state.isPaintMode);
+  const setPaintMode = useCanvasStore((state)=>state.setPaintMode)
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
@@ -402,6 +405,29 @@ export const useStage = () => {
         containerRect.left + stagePointerPosition?.x + 4 + "px";
     }
   }
-  return { handleWheel, layerDragMove, layerDragEnd ,copyShape,drawGridOnLayer,showContextMenu};
+
+  const handleMouseDownPainting = (e: KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>,stage:Stage,layer:Layer)=>{
+    setPaintMode(true);
+console.log('first')
+    if(stage){
+      let pos = stage.getPointerPosition()!;
+      let   lastLine = new Konva.Line({
+           stroke: '#df4b26',
+           strokeWidth: 5,
+           globalCompositeOperation:
+             drawingMode === 'brush' ? 'source-over' : 'destination-out',
+           // round cap for smoother lines
+           lineCap: 'round',
+           lineJoin: 'round',
+           // add point twice, so we have some drawings even on a simple click
+           points: [pos.x, pos.y, pos.x, pos.y],
+         });
+         layer.add(lastLine);
+    }
+ 
+  }
+
+
+  return { handleWheel, layerDragMove, layerDragEnd ,copyShape,drawGridOnLayer,showContextMenu,handleMouseDownPainting};
 
 }

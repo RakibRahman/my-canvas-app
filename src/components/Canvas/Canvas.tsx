@@ -11,15 +11,20 @@ export const Canvas = () => {
 
   const stageRef = useRef<Konva.Stage>(null);
   const layerRef = useRef<Konva.Layer>(null);
+  const trRef = useRef<Konva.Transformer>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
-  const setSelectedItem = useCanvasStore((state) => state.setSelectedItem);
 
   const selectedItem = useCanvasStore((state) => state.selectedItem);
+  const setSelectedItem = useCanvasStore((state) => state.setSelectedItem);
+
   const isStageDraggable = useCanvasStore((state) => state.dragStage);
   const isStageCleared = useCanvasStore((state) => state.isStageCleared);
   const { stageScale, stageX, stageY } = useCanvasStore((state) => state.zoom);
-  const trRef = useRef<Konva.Transformer>(null);
-  const { handleWheel, layerDragMove, layerDragEnd, drawGridOnLayer,showContextMenu } =
+  const drawingMode = useCanvasStore((state)=>state.drawingMode);
+  const isPaintingMode = useCanvasStore((state)=>state.isPaintMode);
+  const setPaintMode = useCanvasStore((state)=>state.setPaintMode)
+  
+  const { handleWheel, layerDragMove, layerDragEnd, drawGridOnLayer,showContextMenu ,handleMouseDownPainting} =
     useStage();
 
   useEffect(() => {
@@ -68,6 +73,21 @@ export const Canvas = () => {
         ref={stageRef}
         onContextMenu={(e) => {
           showContextMenu(e,stageRef.current!,contextMenuRef.current!)
+        }}
+
+
+        onMouseDown={(e)=>{
+          handleMouseDownPainting(e,stageRef.current!,layerRef.current!)
+        }}
+        onTouchStart={(e)=>{
+          handleMouseDownPainting(e,stageRef.current!,layerRef.current!)
+
+        }}
+        onMouseUp={()=>{
+          setPaintMode(false);
+        }}
+        onTouchEnd={()=>{
+          setPaintMode(false);
         }}
       >
         <Layer

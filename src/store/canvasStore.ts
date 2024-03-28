@@ -16,6 +16,7 @@ type State = {
   shapes: JSX.Element[]
   isStageCleared: boolean
   drawingMode: DrawingMode
+  isPaintMode:boolean
 }
 type Action = {
 
@@ -25,6 +26,7 @@ type Action = {
   setShapes: (payload: JSX.Element) => void;
   setStageCleared: () => void;
   setDrawingMode:(payload:DrawingMode)=>void;
+  setPaintMode:(payload:boolean)=>void;
 }
 
 type Store = State & Action
@@ -41,10 +43,12 @@ export const useCanvasStore = create<Store>()((set) => ({
   },
   isStageCleared: false,
   drawingMode:null,
+  isPaintMode:false,
   setSelectedItem: (payload) => set(() => ({ selectedItem: payload })),
   handleDragStage: () => set((state) => ({ dragStage: !state.dragStage })),
   handleZoom: (payload) => set(() => ({ zoom: payload })),
   setShapes: (payload) => set((state) => ({ shapes: [...state.shapes, payload] })),
   setStageCleared: () => set((state) => ({ isStageCleared: !state.isStageCleared })),
-  setDrawingMode:(payload)=>set(()=>({drawingMode:payload}))
+  setDrawingMode:(payload)=>set(()=>({drawingMode:payload})),
+  setPaintMode:(payload)=> set(() => ({ isPaintMode:payload }))
 }))
