@@ -2,7 +2,9 @@ import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { useCanvasStore } from '../store/canvasStore';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
-import { Circle } from 'react-konva';
+import { Circle } from '../components/Canvas/Shapes/Circle';
+import { RefObject } from 'react';
+
 
 const BG_IMAGE_URL = 'https://img.freepik.com/free-photo/abstract-blue-extruded-voronoi-blocks-background-minimal-light-clean-corporate-wall-3d-geometric-surface-illustration-polygonal-elements-displacement_1217-2510.jpg?w=1380&t=st=1711346586~exp=1711347186~hmac=8bfdb9381b6aafb5b32a44f7eb8555bdf91edb25aa4916ebc93c3e2f158214c6'
 export const stageStyle = {
@@ -14,6 +16,7 @@ type Stage = Konva.Stage;
 type Layer = Konva.Layer;
 type LayerDragEvent = KonvaEventObject<DragEvent>;
 type KonvaShape = Konva.Shape
+type AvailableShapes = 'Circle' | 'Rect' | 'Text' | 'Ellipse';
 
 type Vertical = number | Vertical[];
 type Horizontal = number | Horizontal[];
@@ -46,6 +49,7 @@ type ItemBounds = {
 
 export const useStage = () => {
 
+  const setShapes = useCanvasStore((state)=>state.setShapes)
 
   const SCALE_BY = 1.05;
   const GUIDELINE_OFFSET = 5;
@@ -318,28 +322,86 @@ export const useStage = () => {
   };
 
 
+  const copyShape = (selectedItem: Konva.Stage | Shape<ShapeConfig>)=>{
 
-  const copyShape = (layer:Layer,selectedItem: Konva.Stage | Shape<ShapeConfig>)=>{
+ 
+    const shapeName = selectedItem.getClassName() as AvailableShapes;
 
-
-    const shapeName = selectedItem.getClassName();
+ 
 
     if(shapeName==='Circle'){
-      layer.add(new Konva.Circle({
-        x:selectedItem.attrs.x+10,
-        y:selectedItem.attrs.y+10,
-        fill:selectedItem.attrs.fill,
-        radius:50,
-        name:"object",
-        stroke:"black",
-        strokeWidth:4,
-        draggable:true
-      }))
+    
+      setShapes(<Circle
+      x={selectedItem.attrs.x+10}
+      y={selectedItem.attrs.y+10}
+      fill={selectedItem.attrs.fill}
+      radius={selectedItem.attrs.radius}
+      draggable
+
+      />)
+
+      
     }
 
 
   }
 
-  return { handleWheel, layerDragMove, layerDragEnd ,copyShape};
+
+  const drawGridOnLayer = (layer:Layer)=>{
+    const padding = 30;
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+
+    for (var i = 0; i < width / padding; i++) {
+      layer?.add(
+        new Konva.Line({
+          points: [
+            Math.round(i * padding) + 0.5,
+            0,
+            Math.round(i * padding) + 0.5,
+            height,
+          ],
+          stroke: "#ddd",
+          strokeWidth: 1,
+        })
+      );
+    }
+
+    layer?.add(new Konva.Line({ points: [0, 0, 10, 10] }));
+    for (var j = 0; j < height / padding; j++) {
+      layer?.add(
+        new Konva.Line({
+          points: [0, Math.round(j * padding), width, Math.round(j * padding)],
+          stroke: "#ddd",
+          strokeWidth: 0.5,
+        })
+      );
+    }
+  };
+
+  const showContextMenu = (e: KonvaEventObject<PointerEvent>,stage:Stage,contextMenu:HTMLElement)=>{
+
+
+    e.evt.preventDefault();
+    if (e.target === stage) {
+      // if we are on empty place of the stage we will do nothing
+      return;
+    }
+
+    // show menu
+    if (contextMenu) {
+      let containerRect = stage
+        ?.container()
+        .getBoundingClientRect()!;
+      const stagePointerPosition =
+        stage?.getPointerPosition()!;
+      contextMenu.style.display = "block";
+      contextMenu.style.top =
+        containerRect.top + stagePointerPosition?.y + 4 + "px";
+      contextMenu.style.left =
+        containerRect.left + stagePointerPosition?.x + 4 + "px";
+    }
+  }
+  return { handleWheel, layerDragMove, layerDragEnd ,copyShape,drawGridOnLayer,showContextMenu};
 
 }
