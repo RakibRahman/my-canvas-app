@@ -52,13 +52,7 @@ export const useStage = () => {
   const SCALE_BY = 1.05;
   const GUIDELINE_OFFSET = 5;
   const handleZoom = useCanvasStore((state) => state.handleZoom);
-  const drawingMode = useCanvasStore((state) => state.drawingMode);
-  const isPaintingMode = useCanvasStore((state) => state.isPaintMode);
-  const setPaintMode = useCanvasStore((state) => state.setPaintMode);
 
-  const drawingLines = useCanvasStore((state) => state.drawingLines);
-  const setDrawingLines = useCanvasStore((state) => state.setDrawingLines);
-  const drawingColor = useCanvasStore((state) => state.drawingColor);
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
@@ -384,45 +378,6 @@ export const useStage = () => {
     }
   };
 
-  const handleMouseDownPainting = (
-    e: KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>
-  ) => {
-    setPaintMode(true);
-
-    const pos = e?.target?.getStage()?.getPointerPosition()!;
-
-    if (pos) {
-      setDrawingLines([
-        ...drawingLines,
-        {
-          tool: drawingMode,
-          points: [pos?.x, pos?.y],
-          strokeWidth: drawingMode === "brush" ? 5 : 1,
-          stroke: drawingColor,
-        },
-      ]);
-    }
-  };
-
-  const handleMouseMovePainting = (
-    e: KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>
-  ) => {
-    if (!isPaintingMode) {
-      return;
-    }
-
-    // prevent scrolling on touch devices
-    e.evt.preventDefault();
-    const stage = e?.target?.getStage()!;
-    const point = stage?.getPointerPosition()!;
-    let lastLine = drawingLines[drawingLines.length - 1];
-    // add point
-    lastLine.points = lastLine?.points?.concat([point.x, point.y]);
-
-    // replace last
-    drawingLines.splice(drawingLines.length - 1, 1, lastLine);
-    setDrawingLines(drawingLines?.concat());
-  };
 
   return {
     handleWheel,
@@ -431,7 +386,5 @@ export const useStage = () => {
     copyShape,
     drawGridOnLayer,
     showContextMenu,
-    handleMouseDownPainting,
-    handleMouseMovePainting,
   };
 };

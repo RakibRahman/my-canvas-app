@@ -1,9 +1,4 @@
-import { useState } from "react";
-import {
-    PiCircle,
-    PiRectangle,
-    PiShapes
-} from "react-icons/pi";
+import { PiCircle, PiRectangle, PiShapes } from "react-icons/pi";
 import EllipseIcon from "../../assets/icons/ellipse.svg";
 import { useCanvasStore } from "../../store/canvasStore";
 import { Button } from "../common/Button";
@@ -14,7 +9,6 @@ import { useToggle } from "../../hooks/useToggle";
 
 export const ShapeMenu = () => {
   const setShapes = useCanvasStore((state) => state.setShapes);
-
   const [value, toggle] = useToggle();
 
   return (
@@ -25,8 +19,6 @@ export const ShapeMenu = () => {
         className={"relative"}
         onClick={toggle}
       />
-
-
 
       {value ? (
         <ul className="menu bg-base-200 w-auto rounded-box absolute top-24 z-10">

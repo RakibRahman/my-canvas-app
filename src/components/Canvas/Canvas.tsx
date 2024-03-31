@@ -5,6 +5,7 @@ import { useStage } from "../../hooks/useStage";
 import { useCanvasStore } from "../../store/canvasStore";
 import { CanvasToolBar } from "./CanvasToolBar";
 import { CanvasContextMenu } from "./CanvasContextMenu";
+import { useDraw } from "../../hooks/useDraw";
 
 export const Canvas = () => {
   const shapes = useCanvasStore((state) => state.shapes);
@@ -31,9 +32,9 @@ export const Canvas = () => {
     layerDragEnd,
     drawGridOnLayer,
     showContextMenu,
-    handleMouseDownPainting,
-    handleMouseMovePainting,
   } = useStage();
+
+  const { handleMouseDownPainting, handleMouseMovePainting } = useDraw();
 
   useEffect(() => {
     if (selectedItem) {

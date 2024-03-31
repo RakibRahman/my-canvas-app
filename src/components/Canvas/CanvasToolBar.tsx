@@ -11,8 +11,6 @@ import {
   PiHand,
   PiHandFill,
   PiTextT,
-  PiPencilSimpleThin,
-  PiEraser,
 } from "react-icons/pi";
 import { ShapeMenu } from "./ShapeMenu";
 import { DrawingMenu } from "./DrawingMenu";
@@ -35,7 +33,6 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
   const setStageCleared = useCanvasStore((state) => state.setStageCleared);
   const setDrawingMode = useCanvasStore((state) => state.setDrawingMode);
   const drawingMode = useCanvasStore((state) => state.drawingMode);
-
 
   return (
     <div className="flex gap-2  my-4 items-center justify-center">
