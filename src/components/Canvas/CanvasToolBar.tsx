@@ -15,6 +15,7 @@ import {
   PiEraser,
 } from "react-icons/pi";
 import { ShapeMenu } from "./ShapeMenu";
+import { DrawingMenu } from "./DrawingMenu";
 
 interface CanvasToolBarProps {
   stageRef: RefObject<Konva.Stage>;
@@ -32,8 +33,9 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
   const isStageDraggable = useCanvasStore((state) => state.dragStage);
   const handleDragStage = useCanvasStore((state) => state.handleDragStage);
   const setStageCleared = useCanvasStore((state) => state.setStageCleared);
-  const drawingMode = useCanvasStore((state) => state.drawingMode);
   const setDrawingMode = useCanvasStore((state) => state.setDrawingMode);
+  const drawingMode = useCanvasStore((state) => state.drawingMode);
+
 
   return (
     <div className="flex gap-2  my-4 items-center justify-center">
@@ -88,7 +90,7 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
       <Button
         title=""
         rightIcon={
-          isStageDraggable ? (
+          isStageDraggable || drawingMode ? (
             <PiCursorLight />
           ) : (
             <PiCursorFill color="#60a5fa" />
@@ -98,6 +100,7 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
           if (isStageDraggable) {
             handleDragStage();
           }
+          setDrawingMode(null);
         }}
       />
 
@@ -110,32 +113,7 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
           isStageDraggable ? <PiHandFill color="#60a5fa" /> : <PiHand />
         }
       />
-      <Button
-        title="Draw"
-        rightIcon={
-          drawingMode === "brush" ? (
-            <PiPencilSimpleThin color="#60a5fa" />
-          ) : (
-            <PiPencilSimpleThin />
-          )
-        }
-        onClick={() => {
-          setDrawingMode("brush");
-        }}
-      />
-      <Button
-        title="Eraser"
-        rightIcon={
-          drawingMode === "eraser" ? (
-            <PiEraser color="#60a5fa" />
-          ) : (
-            <PiEraser />
-          )
-        }
-        onClick={() => {
-          setDrawingMode("eraser");
-        }}
-      />
+      <DrawingMenu />
     </div>
   );
 };

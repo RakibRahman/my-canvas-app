@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { Shape, ShapeConfig, } from "konva/lib/Shape";
+import { KonvaNodeComponent } from "react-konva";
 import { create } from 'zustand';
 
 type Zoom = {
@@ -7,15 +8,17 @@ type Zoom = {
   stageX: number,
   stageY: number
 }
-type DrawingMode = 'brush' | 'eraser' | null
+type DrawingMode = 'brush' | 'eraser' | 'pencil' | null
 type State = {
 
   selectedItem: Konva.Stage | Shape<ShapeConfig> | null,
   dragStage: boolean
   zoom: Zoom
   shapes: JSX.Element[]
+  drawingLines: any[]
   isStageCleared: boolean
   drawingMode: DrawingMode
+  drawingColor:string
   isPaintMode:boolean
 }
 type Action = {
@@ -27,6 +30,8 @@ type Action = {
   setStageCleared: () => void;
   setDrawingMode:(payload:DrawingMode)=>void;
   setPaintMode:(payload:boolean)=>void;
+  setDrawingLines:(payload:any)=>void;
+  setDrawingColor:(payload:string)=>void;
 }
 
 type Store = State & Action
@@ -44,11 +49,15 @@ export const useCanvasStore = create<Store>()((set) => ({
   isStageCleared: false,
   drawingMode:null,
   isPaintMode:false,
+  drawingLines:[],
+  drawingColor:'#df4b26',
   setSelectedItem: (payload) => set(() => ({ selectedItem: payload })),
   handleDragStage: () => set((state) => ({ dragStage: !state.dragStage })),
   handleZoom: (payload) => set(() => ({ zoom: payload })),
   setShapes: (payload) => set((state) => ({ shapes: [...state.shapes, payload] })),
   setStageCleared: () => set((state) => ({ isStageCleared: !state.isStageCleared })),
   setDrawingMode:(payload)=>set(()=>({drawingMode:payload})),
-  setPaintMode:(payload)=> set(() => ({ isPaintMode:payload }))
+  setPaintMode:(payload)=> set(() => ({ isPaintMode:payload })),
+  setDrawingLines:(payload)=>set(()=>({drawingLines:payload})),
+  setDrawingColor:(payload)=>set(()=>({drawingColor:payload}))
 }))

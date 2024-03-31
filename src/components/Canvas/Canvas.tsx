@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { useEffect, useRef } from "react";
-import { Layer, Stage, Transformer } from "react-konva";
+import { Layer, Line, Stage, Transformer } from "react-konva";
 import { useStage } from "../../hooks/useStage";
 import { useCanvasStore } from "../../store/canvasStore";
 import { CanvasToolBar } from "./CanvasToolBar";
@@ -8,6 +8,8 @@ import { CanvasContextMenu } from "./CanvasContextMenu";
 
 export const Canvas = () => {
   const shapes = useCanvasStore((state) => state.shapes);
+  const drawingLines = useCanvasStore((state) => state.drawingLines);
+  const drawingColor = useCanvasStore((state) => state.drawingColor);
 
   const stageRef = useRef<Konva.Stage>(null);
   const layerRef = useRef<Konva.Layer>(null);
@@ -20,12 +22,18 @@ export const Canvas = () => {
   const isStageDraggable = useCanvasStore((state) => state.dragStage);
   const isStageCleared = useCanvasStore((state) => state.isStageCleared);
   const { stageScale, stageX, stageY } = useCanvasStore((state) => state.zoom);
-  const drawingMode = useCanvasStore((state)=>state.drawingMode);
-  const isPaintingMode = useCanvasStore((state)=>state.isPaintMode);
-  const setPaintMode = useCanvasStore((state)=>state.setPaintMode)
-  
-  const { handleWheel, layerDragMove, layerDragEnd, drawGridOnLayer,showContextMenu ,handleMouseDownPainting,handleMouseUpPainting} =
-    useStage();
+
+  const setPaintMode = useCanvasStore((state) => state.setPaintMode);
+
+  const {
+    handleWheel,
+    layerDragMove,
+    layerDragEnd,
+    drawGridOnLayer,
+    showContextMenu,
+    handleMouseDownPainting,
+    handleMouseMovePainting,
+  } = useStage();
 
   useEffect(() => {
     if (selectedItem) {
@@ -72,30 +80,25 @@ export const Canvas = () => {
         }}
         ref={stageRef}
         onContextMenu={(e) => {
-          showContextMenu(e,stageRef.current!,contextMenuRef.current!)
+          showContextMenu(e, stageRef.current!, contextMenuRef.current!);
         }}
-
-
-        onMouseDown={(e)=>{
-          handleMouseDownPainting(e,stageRef.current!,layerRef.current!)
+        onMouseDown={(e) => {
+          handleMouseDownPainting(e);
         }}
-        onTouchStart={(e)=>{
-          handleMouseDownPainting(e,stageRef.current!,layerRef.current!)
-
+        onTouchStart={(e) => {
+          handleMouseDownPainting(e);
         }}
-        onMouseUp={()=>{
+        onMouseUp={() => {
           setPaintMode(false);
         }}
-        onTouchEnd={()=>{
+        onTouchEnd={() => {
           setPaintMode(false);
         }}
-
-        onMouseMove={(e)=>{
-          handleMouseUpPainting(e,stageRef.current!,layerRef.current!)
+        onMouseMove={(e) => {
+          handleMouseMovePainting(e);
         }}
-        onTouchMove={(e)=>{
-          handleMouseUpPainting(e,stageRef.current!,layerRef.current!)
-
+        onTouchMove={(e) => {
+          handleMouseMovePainting(e);
         }}
       >
         <Layer
@@ -103,11 +106,26 @@ export const Canvas = () => {
           onDragMove={(e) => {
             layerDragMove(e, stageRef.current!, layerRef.current!);
           }}
-          onDragEnd={(e) => {
+          onDragEnd={() => {
             layerDragEnd(layerRef.current!);
           }}
         >
           {...shapes}
+
+          {drawingLines.map((line, i) => (
+            <Line
+              key={i}
+              points={line.points}
+              stroke={line.stroke ?? drawingColor}
+              strokeWidth={line?.tool === "eraser" ? 5 : line.strokeWidth ?? 5}
+              tension={0.5}
+              lineCap="round"
+              lineJoin="round"
+              globalCompositeOperation={
+                line?.tool === "eraser" ? "destination-out" : "source-over"
+              }
+            />
+          ))}
 
           <Transformer
             ref={trRef}

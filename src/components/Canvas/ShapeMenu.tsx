@@ -10,13 +10,12 @@ import { Button } from "../common/Button";
 import { Circle } from "./Shapes/Circle";
 import { Ellipse } from "./Shapes/Ellipse";
 import { Rectangle } from "./Shapes/Rectangle";
+import { useToggle } from "../../hooks/useToggle";
 
 export const ShapeMenu = () => {
   const setShapes = useCanvasStore((state) => state.setShapes);
 
-  const [showMenu, setShowMenu] = useState(false);
-
-  const toggleMenu = ()=>setShowMenu((s)=>!s);
+  const [value, toggle] = useToggle();
 
   return (
     <div>
@@ -24,12 +23,12 @@ export const ShapeMenu = () => {
         title="Shapes"
         rightIcon={<PiShapes />}
         className={"relative"}
-        onClick={toggleMenu}
+        onClick={toggle}
       />
 
 
 
-      {showMenu ? (
+      {value ? (
         <ul className="menu bg-base-200 w-auto rounded-box absolute top-24 z-10">
           <li>
             <a>
@@ -38,7 +37,7 @@ export const ShapeMenu = () => {
                 rightIcon={<PiCircle />}
                 onClick={() => {
                   setShapes(<Circle />);
-                  toggleMenu();
+                  toggle();
                 }}
               />
             </a>
@@ -48,7 +47,7 @@ export const ShapeMenu = () => {
               <Button
                 onClick={() => {
                   setShapes(<Rectangle />);
-                  toggleMenu();
+                  toggle();
                 }}
                 title="Rect"
                 rightIcon={<PiRectangle />}
@@ -62,7 +61,7 @@ export const ShapeMenu = () => {
                 rightIcon={<img src={EllipseIcon} alt="Ellipse Logo" />}
                 onClick={() => {
                   setShapes(<Ellipse />);
-                  toggleMenu();
+                  toggle();
                 }}
               />
             </a>
