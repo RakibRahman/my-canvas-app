@@ -1,5 +1,5 @@
 import { MdOutlineDraw } from "react-icons/md";
-import { PiEraser, PiPencilSimpleThin,PiPaintBrushFill } from "react-icons/pi";
+import { PiEraser, PiPaintBrushFill, PiPencilSimpleThin } from "react-icons/pi";
 import { useToggle } from "../../hooks/useToggle";
 import { useCanvasStore } from "../../store/canvasStore";
 import { Button } from "../common/Button";
@@ -8,7 +8,8 @@ export const DrawingMenu = () => {
   const setDrawingMode = useCanvasStore((state) => state.setDrawingMode);
   const drawingMode = useCanvasStore((state) => state.drawingMode);
   const [value, toggle] = useToggle();
-
+const drawingColor = useCanvasStore((state)=>state.drawingColor);
+const setDrawingColor = useCanvasStore((state)=>state.setDrawingColor)
   return (
     <div>
       <Button
@@ -67,6 +68,13 @@ export const DrawingMenu = () => {
 
             }}
           />
+        </li>
+
+        <li>
+          <input id="drawingColor" name="drawingColor" type="color" value={drawingColor} onChange={(e)=>{
+            console.log('e.target.value',e.target.value)
+            setDrawingColor(e.target.value)
+          }}/>
         </li>
       </ul>:null}
     </div>
