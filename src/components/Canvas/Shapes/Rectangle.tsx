@@ -9,6 +9,7 @@ export const Rectangle = () => {
   
     const handleClick = () => {
       setColor(Konva.Util.getRandomColor());
+    
       
     };
   
@@ -18,7 +19,7 @@ export const Rectangle = () => {
      
       <>
        <Rect
-  
+    
         id={`rect-${nanoid()}`}
         x={20}
         y={20}

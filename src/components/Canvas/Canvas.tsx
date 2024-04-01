@@ -1,16 +1,15 @@
 import Konva from "konva";
 import { useEffect, useRef } from "react";
-import { Layer, Line, Stage, Transformer } from "react-konva";
+import { Layer, Line, Rect, Stage, Transformer } from "react-konva";
 import { useStage } from "../../hooks/useStage";
 import { useCanvasStore } from "../../store/canvasStore";
 import { CanvasToolBar } from "./CanvasToolBar";
 import { CanvasContextMenu } from "./CanvasContextMenu";
 import { useDraw } from "../../hooks/useDraw";
+import { Drawing } from "./Drawing";
 
 export const Canvas = () => {
   const shapes = useCanvasStore((state) => state.shapes);
-  const drawingLines = useCanvasStore((state) => state.drawingLines);
-  const drawingColor = useCanvasStore((state) => state.drawingColor);
 
   const stageRef = useRef<Konva.Stage>(null);
   const layerRef = useRef<Konva.Layer>(null);
@@ -25,6 +24,7 @@ export const Canvas = () => {
   const { stageScale, stageX, stageY } = useCanvasStore((state) => state.zoom);
 
   const setPaintMode = useCanvasStore((state) => state.setPaintMode);
+  const drawingMode = useCanvasStore((state) => state.drawingMode);
 
   const {
     handleWheel,
@@ -96,10 +96,14 @@ export const Canvas = () => {
           setPaintMode(false);
         }}
         onMouseMove={(e) => {
-          handleMouseMovePainting(e);
+          if (drawingMode) {
+            handleMouseMovePainting(e);
+          }
         }}
         onTouchMove={(e) => {
-          handleMouseMovePainting(e);
+          if (drawingMode) {
+            handleMouseMovePainting(e);
+          }
         }}
       >
         <Layer
@@ -113,22 +117,11 @@ export const Canvas = () => {
         >
           {...shapes}
 
-          {drawingLines.map((line, i) => (
-            <Line
-              key={i}
-              points={line.points}
-              stroke={line.stroke ?? drawingColor}
-              strokeWidth={line?.tool === "eraser" ? 5 : line.strokeWidth ?? 5}
-              tension={0.5}
-              lineCap="round"
-              lineJoin="round"
-              globalCompositeOperation={
-                line?.tool === "eraser" ? "destination-out" : "source-over"
-              }
-            />
-          ))}
+          <Drawing />
 
           <Transformer
+            anchorCornerRadius={10}
+            borderEnabled={false}
             ref={trRef}
             enabledAnchors={[
               "top-left",
