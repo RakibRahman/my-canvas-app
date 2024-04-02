@@ -30,6 +30,7 @@ export const Circle:FC<Partial<CircleShapeProps>> = ({x=100,y=100,radius=50,fill
       onClick={(e)=>{
         console.log('hello from circle')
       }}
+      
     />
   );
 };

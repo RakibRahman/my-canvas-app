@@ -10,6 +10,7 @@ import { useToggle } from "../../hooks/useToggle";
 export const ShapeMenu = () => {
   const setShapes = useCanvasStore((state) => state.setShapes);
   const [value, toggle] = useToggle();
+  const setSelectedShape = useCanvasStore((state) => state.setSelectedShape);
 
   return (
     <div>
@@ -28,7 +29,7 @@ export const ShapeMenu = () => {
                 title="Circle"
                 rightIcon={<PiCircle />}
                 onClick={() => {
-                  setShapes(<Circle />);
+                  setSelectedShape('CIRCLE')
                   toggle();
                 }}
               />
@@ -38,7 +39,8 @@ export const ShapeMenu = () => {
             <a>
               <Button
                 onClick={() => {
-                  setShapes(<Rectangle />);
+                  setSelectedShape('RECT')
+
                   toggle();
                 }}
                 title="Rect"
@@ -52,7 +54,7 @@ export const ShapeMenu = () => {
                 title="Ellipse"
                 rightIcon={<img src={EllipseIcon} alt="Ellipse Logo" />}
                 onClick={() => {
-                  setShapes(<Ellipse />);
+                  // setShapes(<Ellipse />);
                   toggle();
                 }}
               />

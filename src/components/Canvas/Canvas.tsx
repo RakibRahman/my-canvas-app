@@ -1,12 +1,25 @@
 import Konva from "konva";
-import { useEffect, useRef } from "react";
-import { Layer, Line, Rect, Stage, Transformer } from "react-konva";
+import { useEffect, useRef, useState } from "react";
+import { Circle, Layer, Line, Rect, Stage, Transformer } from "react-konva";
 import { useStage } from "../../hooks/useStage";
-import { useCanvasStore } from "../../store/canvasStore";
+import { BasicShape, useCanvasStore } from "../../store/canvasStore";
 import { CanvasToolBar } from "./CanvasToolBar";
 import { CanvasContextMenu } from "./CanvasContextMenu";
 import { useDraw } from "../../hooks/useDraw";
 import { Drawing } from "./Drawing";
+import { useRenderShape } from "../../hooks/useRenderShape";
+import { Text } from "./Shapes/Text";
+
+// interface CircleShape extends BasicShape{
+//   radius:number
+
+// }
+
+// interface RectShape extends BasicShape{
+// width:number
+// height:number
+
+// }
 
 export const Canvas = () => {
   const shapes = useCanvasStore((state) => state.shapes);
@@ -25,6 +38,14 @@ export const Canvas = () => {
 
   const setPaintMode = useCanvasStore((state) => state.setPaintMode);
   const drawingMode = useCanvasStore((state) => state.drawingMode);
+
+  const {
+    handleShapeOnMouseDown,
+    handleShapeOnMouseUp,
+    handleShapeOnMouseMove,
+  } = useRenderShape();
+
+  console.log({shapes})
 
   const {
     handleWheel,
@@ -74,7 +95,7 @@ export const Canvas = () => {
         width={window.innerWidth}
         height={window.innerHeight}
         onClick={(e) => {
-          // console.log(e)
+          console.log("this is it", e);
           trRef.current?.show();
 
           setSelectedItem(e.target);
@@ -85,12 +106,16 @@ export const Canvas = () => {
         }}
         onMouseDown={(e) => {
           handleMouseDownPainting(e);
+
+          handleShapeOnMouseDown(e);
         }}
         onTouchStart={(e) => {
           handleMouseDownPainting(e);
         }}
-        onMouseUp={() => {
+        onMouseUp={(e) => {
           setPaintMode(false);
+
+          handleShapeOnMouseUp(e);
         }}
         onTouchEnd={() => {
           setPaintMode(false);
@@ -99,6 +124,8 @@ export const Canvas = () => {
           if (drawingMode) {
             handleMouseMovePainting(e);
           }
+
+          handleShapeOnMouseMove(e);
         }}
         onTouchMove={(e) => {
           if (drawingMode) {
@@ -115,7 +142,32 @@ export const Canvas = () => {
             layerDragEnd(layerRef.current!);
           }}
         >
-          {...shapes}
+          {/* {...shapes} */}
+
+          {shapes.map((value) => {
+            return value.type === "CIRCLE" ? (
+              <Circle
+                x={value.x}
+                y={value.y}
+                radius={50}
+                fill="transparent"
+                stroke="black"
+              />
+            ) : value.type === "RECT" ? (
+              <Rect
+                x={value.x}
+                y={value.y}
+                width={value.width}
+                height={value.height}
+                fill="green"
+              />
+            ) : (
+              <Text
+                transformerRef={trRef!}
+                stageContainer={stageRef?.current?.container()!}
+              />
+            );
+          })}
 
           <Drawing />
 

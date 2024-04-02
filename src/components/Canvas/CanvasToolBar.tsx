@@ -32,7 +32,10 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
   const handleDragStage = useCanvasStore((state) => state.handleDragStage);
   const setStageCleared = useCanvasStore((state) => state.setStageCleared);
   const setDrawingMode = useCanvasStore((state) => state.setDrawingMode);
+
   const drawingMode = useCanvasStore((state) => state.drawingMode);
+  
+  const setSelectedShape = useCanvasStore((state) => state.setSelectedShape);
 
   return (
     <div className="flex gap-2  my-4 items-center justify-center">
@@ -75,12 +78,7 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
         title="Text"
         rightIcon={<PiTextT />}
         onClick={() => {
-          setShapes(
-            <Text
-              stageContainer={stageRef.current?.container()!}
-              transformerRef={trRef}
-            />
-          );
+         setSelectedShape('TEXT')
         }}
       />
 
@@ -98,6 +96,8 @@ export const CanvasToolBar: FC<CanvasToolBarProps> = ({
             handleDragStage();
           }
           setDrawingMode(null);
+         setSelectedShape(null)
+
         }}
       />
 
