@@ -45,6 +45,7 @@ type Action = {
   setDrawingLines:(payload:any)=>void;
   setDrawingColor:(payload:string)=>void;
   setSelectedShape:(payload:'CIRCLE' | 'RECT' | 'TEXT' | null )=>void;
+  pushShapes:(payload:BasicShape)=>void;
 }
 
 type Store = State & Action
@@ -73,6 +74,7 @@ export const useCanvasStore = create<Store>()((set) => ({
   setPaintMode:(payload)=> set(() => ({ isPaintMode:payload })),
   setDrawingLines:(payload)=>set(()=>({drawingLines:payload})),
   setDrawingColor:(payload)=>set(()=>({drawingColor:payload})),
-  setSelectedShape:(payload)=>set(()=>({selectedShape:payload}))
+  setSelectedShape:(payload)=>set(()=>({selectedShape:payload})),
+  pushShapes:(payload)=>set((state)=>({shapes:[...state.shapes,payload]}))
 
 }))

@@ -11,12 +11,17 @@ declare global {
 interface TextComponentProps {
   stageContainer: HTMLDivElement;
   transformerRef: RefObject<Konva.Transformer>;
+  x:number;
+  y:number;
+  fill:string;
+  width:number;
+  fontSize:number
 }
 
 export const Text: React.FC<TextComponentProps> = ({
   stageContainer,
-
   transformerRef,
+  x,y,fill,width,fontSize
 }) => {
   const textRef = useRef<Konva.Text>(null);
 
@@ -151,11 +156,11 @@ export const Text: React.FC<TextComponentProps> = ({
           });
         }}
         text="Hello, World!"
-        x={50}
-        y={80}
-        width={200}
-        fontSize={20}
-        fill="black"
+        x={x}
+        y={y}
+        width={width}
+        fontSize={fontSize}
+        fill={fill}
         draggable
         // onTransform={() => {
         //   {

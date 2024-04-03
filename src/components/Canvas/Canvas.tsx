@@ -31,6 +31,7 @@ export const Canvas = () => {
 
   const selectedItem = useCanvasStore((state) => state.selectedItem);
   const setSelectedItem = useCanvasStore((state) => state.setSelectedItem);
+  const selectedShape = useCanvasStore((state) => state.selectedShape);
 
   const isStageDraggable = useCanvasStore((state) => state.dragStage);
   const isStageCleared = useCanvasStore((state) => state.isStageCleared);
@@ -43,9 +44,10 @@ export const Canvas = () => {
     handleShapeOnMouseDown,
     handleShapeOnMouseUp,
     handleShapeOnMouseMove,
+    addText
   } = useRenderShape();
 
-  console.log({shapes})
+  console.log({shapes,selectedShape})
 
   const {
     handleWheel,
@@ -95,10 +97,15 @@ export const Canvas = () => {
         width={window.innerWidth}
         height={window.innerHeight}
         onClick={(e) => {
-          console.log("this is it", e);
+          // console.log("this is it", e);
           trRef.current?.show();
-
+          
           setSelectedItem(e.target);
+          
+          if(selectedShape==='TEXT'){
+            addText(e)
+
+          }
         }}
         ref={stageRef}
         onContextMenu={(e) => {
@@ -107,7 +114,10 @@ export const Canvas = () => {
         onMouseDown={(e) => {
           handleMouseDownPainting(e);
 
-          handleShapeOnMouseDown(e);
+          if(selectedShape){
+            handleShapeOnMouseDown(e);
+
+          }
         }}
         onTouchStart={(e) => {
           handleMouseDownPainting(e);
@@ -115,7 +125,10 @@ export const Canvas = () => {
         onMouseUp={(e) => {
           setPaintMode(false);
 
-          handleShapeOnMouseUp(e);
+          if(selectedShape){
+            handleShapeOnMouseUp(e);
+
+          }
         }}
         onTouchEnd={() => {
           setPaintMode(false);
@@ -125,7 +138,10 @@ export const Canvas = () => {
             handleMouseMovePainting(e);
           }
 
-          handleShapeOnMouseMove(e);
+          if(selectedShape){
+
+            handleShapeOnMouseMove(e);
+          }
         }}
         onTouchMove={(e) => {
           if (drawingMode) {
@@ -144,7 +160,7 @@ export const Canvas = () => {
         >
           {/* {...shapes} */}
 
-          {shapes.map((value) => {
+          {shapes.map((value,i) => {
             return value.type === "CIRCLE" ? (
               <Circle
                 x={value.x}
@@ -152,6 +168,7 @@ export const Canvas = () => {
                 radius={50}
                 fill="transparent"
                 stroke="black"
+                key={i}
               />
             ) : value.type === "RECT" ? (
               <Rect
@@ -160,9 +177,18 @@ export const Canvas = () => {
                 width={value.width}
                 height={value.height}
                 fill="green"
+                key={i}
+
               />
             ) : (
               <Text
+              key={i}
+
+              x={value.x}
+              y={value.y}
+              width={value.width}
+              fill={Konva.Util.getRandomColor()}
+              fontSize={value.fontSize}
                 transformerRef={trRef!}
                 stageContainer={stageRef?.current?.container()!}
               />
