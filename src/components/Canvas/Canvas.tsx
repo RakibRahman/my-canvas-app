@@ -1,13 +1,13 @@
 import Konva from "konva";
-import { useEffect, useRef, useState } from "react";
-import { Circle, Layer, Line, Rect, Stage, Transformer } from "react-konva";
-import { useStage } from "../../hooks/useStage";
-import { BasicShape, useCanvasStore } from "../../store/canvasStore";
-import { CanvasToolBar } from "./CanvasToolBar";
-import { CanvasContextMenu } from "./CanvasContextMenu";
+import { useEffect, useRef } from "react";
+import { Circle, Layer, Rect, Stage, Transformer } from "react-konva";
 import { useDraw } from "../../hooks/useDraw";
-import { Drawing } from "./Drawing";
 import { useRenderShape } from "../../hooks/useRenderShape";
+import { useStage } from "../../hooks/useStage";
+import { useCanvasStore } from "../../store/canvasStore";
+import { CanvasContextMenu } from "./CanvasContextMenu";
+import { CanvasToolBar } from "./CanvasToolBar";
+import { Drawing } from "./Drawing";
 import { Text } from "./Shapes/Text";
 
 // interface CircleShape extends BasicShape{
@@ -122,13 +122,14 @@ export const Canvas = () => {
         onTouchStart={(e) => {
           handleMouseDownPainting(e);
         }}
+        
         onMouseUp={(e) => {
           setPaintMode(false);
 
-          if(selectedShape){
+          // if(selectedShape){
             handleShapeOnMouseUp(e);
 
-          }
+          // }
         }}
         onTouchEnd={() => {
           setPaintMode(false);

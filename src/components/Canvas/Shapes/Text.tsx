@@ -30,6 +30,7 @@ export const Text: React.FC<TextComponentProps> = ({
       <KonvaText
         ref={textRef}
         onDblClick={(e) => {
+          e.target.preventDefault();
           const textNode = textRef.current!;
 
           textNode?.hide();

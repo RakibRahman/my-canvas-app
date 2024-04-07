@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import { BasicShape, useCanvasStore } from "../store/canvasStore";
 import { KonvaEventObject } from "konva/lib/Node";
+import { useState } from "react";
+import { BasicShape, useCanvasStore } from "../store/canvasStore";
 
 export const useRenderShape = () => {
   const [annotations, setAnnotations] = useState<BasicShape[]>([]);
   const [newAnnotation, setNewAnnotation] = useState<BasicShape[]>([]);
   const setShapes = useCanvasStore((state) => state.setShapes);
   const selectedShape = useCanvasStore((state) => state.selectedShape);
+  const setSelectedShape = useCanvasStore((state) => state.setSelectedShape);
+
   const shapes = useCanvasStore((state) => state.shapes);
+
+
+
   console.log('first',annotations)
 
   const addText = (e: KonvaEventObject<MouseEvent>) => {
@@ -25,6 +30,8 @@ export const useRenderShape = () => {
     };
 
     setShapes([...shapes, textProperties]);
+
+    setSelectedShape(null);
   };
 
   const handleShapeOnMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -32,7 +39,6 @@ export const useRenderShape = () => {
       return;
     }
 
-    console.log("handleShapeOnMouseDown");
     const { x, y } = e?.target?.getStage()?.getPointerPosition()!;
 
     if (newAnnotation.length === 0) {
@@ -52,7 +58,6 @@ export const useRenderShape = () => {
   };
 
   const handleShapeOnMouseUp = (e: KonvaEventObject<MouseEvent>) => {
-    console.log("handleShapeOnMouseUp");
 
     if (selectedShape === "TEXT") {
       return;
@@ -76,8 +81,10 @@ export const useRenderShape = () => {
       annotations.push(annotationToAdd);
       setNewAnnotation([]);
       setAnnotations(annotations);
-      setShapes([...shapes, annotationToAdd]);
+      setShapes([...annotations, annotationToAdd]);
+      setSelectedShape(null)
     }
+    
   };
 
   const handleShapeOnMouseMove = (e: KonvaEventObject<MouseEvent>) => {
@@ -85,13 +92,13 @@ export const useRenderShape = () => {
       return;
     }
 
+    
     if (newAnnotation.length === 1) {
       const sx = newAnnotation[0].x;
       const sy = newAnnotation[0].y;
       const { x, y } = e?.target?.getStage()?.getPointerPosition()!;
-      console.log({ x, y });
+
       setNewAnnotation([
-        // ...shapes,
         {
           x: sx,
           y: sy,
@@ -104,9 +111,9 @@ export const useRenderShape = () => {
         },
       ]);
     }
-
-    setShapes([...annotations, ...newAnnotation]);
   };
+  const annotationsToDraw = [...annotations, ...newAnnotation];
+  console.log({annotationsToDraw})
 
   return {
     handleShapeOnMouseDown,

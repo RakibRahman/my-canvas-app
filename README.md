@@ -29,3 +29,4 @@ export default {
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 # my-canvas-app
+https://codesandbox.io/p/sandbox/react-konva-create-draw-rect-fw9hw?file=%2Fsrc%2Findex.js%3A51%2C1-51%2C64
