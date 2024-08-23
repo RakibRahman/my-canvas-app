@@ -7,6 +7,7 @@ import { CanvasToolBar } from "./CanvasToolBar";
 import { CanvasContextMenu } from "./CanvasContextMenu";
 import { useDraw } from "../../hooks/useDraw";
 import { Drawing } from "./Drawing";
+import { Task } from "./Shapes/Task";
 
 export const Canvas = () => {
   const shapes = useCanvasStore((state) => state.shapes);
@@ -45,7 +46,7 @@ export const Canvas = () => {
   }, [selectedItem]);
 
   useEffect(() => {
-    drawGridOnLayer(layerRef.current!);
+    // drawGridOnLayer(layerRef.current!);
   }, [isStageCleared]);
 
   return (
@@ -112,11 +113,11 @@ export const Canvas = () => {
             layerDragMove(e, stageRef.current!, layerRef.current!);
           }}
           onDragEnd={() => {
-            layerDragEnd(layerRef.current!);
+            // layerDragEnd(layerRef.current!);
           }}
         >
           {...shapes}
-
+          <Task />
           <Drawing />
 
           <Transformer
