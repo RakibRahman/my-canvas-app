@@ -11,7 +11,7 @@ import { Task } from "./Shapes/Task";
 
 export const Canvas = () => {
   const shapes = useCanvasStore((state) => state.shapes);
-
+  const groupRef = useRef<Konva.Group>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const layerRef = useRef<Konva.Layer>(null);
   const trRef = useRef<Konva.Transformer>(null);
@@ -116,7 +116,7 @@ export const Canvas = () => {
             // layerDragEnd(layerRef.current!);
           }}
         >
-          {...shapes}
+          {/* {...shapes} */}
           <Task />
           <Drawing />
 
