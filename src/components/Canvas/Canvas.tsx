@@ -49,6 +49,41 @@ export const Canvas = () => {
     // drawGridOnLayer(layerRef.current!);
   }, [isStageCleared]);
 
+  const tasks = [
+    {
+      title: "Task 1: Implement New Feature",
+      status: "In Progress",
+      user: "John Doe",
+      avatar: "https://picsum.photos/200/301",
+      x: 100,
+      y: 100,
+    },
+    {
+      title: "Task 2: Fix Bug in UI",
+      status: "Needs Review",
+      user: "Jane Smith",
+      avatar: "https://picsum.photos/200/302",
+      x: 100,
+      y: 250,
+    },
+    {
+      title: "Task 3: Optimize Database Queries",
+      status: "Completed",
+      user: "Bob Johnson",
+      avatar: "https://picsum.photos/200/303",
+      x: 500,
+      y: 350,
+    },
+    {
+      title: "Task 4: Update Documentation",
+      status: "In Progress",
+      user: "Unknown User",
+      avatar: "",
+      x: 600,
+      y: 450,
+    },
+  ];
+
   return (
     <div
       style={{
@@ -117,7 +152,9 @@ export const Canvas = () => {
           }}
         >
           {/* {...shapes} */}
-          <Task />
+          {tasks.map((t) => {
+            return <Task task={t} />;
+          })}
           <Drawing />
 
           <Transformer
