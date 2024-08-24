@@ -8,11 +8,12 @@ export const Task = () => {
   const statusRef = useRef<Konva.Text>(null);
   const userRef = useRef<Konva.Text>(null);
   const imageRef = useRef<Konva.Image>(null);
+  const titleRef = useRef<Konva.Text>(null);
   const [image] = useImage("https://picsum.photos/200/300");
   const [hasTransformed, setHasTransformed] = useState(false);
   const task = {
     title:
-      "It is a long established fact that a reader will be distracted by the readable content of a page whenters,It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters,",
+      "Just add yourJust aadJust add yourJust ad Just add yourJust ad Just add yourJust ad Just add yourJust ad Just add yourJust ad Just add yourJust ad",
     status: "Needs Review",
     user: "Irfan amin laib",
   };
@@ -22,22 +23,28 @@ export const Task = () => {
       const clientRect = groupRef.current.size();
       const currentWidth = clientRect.width;
       const currentHeight = clientRect.height;
-      console.log(currentWidth);
+
+      const titleHeight = titleRef.current?.height();
       const usernameWidth = userRef.current?.textWidth;
 
+      const belowTitle = currentHeight - titleHeight! + titleHeight! - 20;
+      console.log({
+        titleHeight,
+        belowTitle,
+      });
       statusRef?.current?.position({
         x: 10,
-        y: currentHeight - 20,
+        y: belowTitle,
       });
 
       userRef?.current?.position({
         x: currentWidth - (usernameWidth! + 10),
-        y: currentHeight - 20,
+        y: belowTitle,
       });
 
       imageRef?.current?.position({
         x: currentWidth - (usernameWidth! + 35),
-        y: currentHeight - 20,
+        y: belowTitle,
       });
     }
   }
@@ -50,7 +57,7 @@ export const Task = () => {
     <Group
       x={100}
       y={100}
-      width={300}
+      width={420}
       //   offsetY={30}
       height={150}
       draggable
@@ -64,24 +71,33 @@ export const Task = () => {
         console.log("wwww");
       }}
     >
-      <Rect x={0} y={0} width={300} height={150} fill="red"></Rect>
+      <Rect x={0} y={0} width={420} height={150} fill="red"></Rect>
       <Text
         text={task.title}
         fill="white"
         fontSize={16}
         x={0}
         y={0}
-        width={300}
+        width={420}
+        ref={titleRef}
+        listening={false}
       />
 
       <Rect fill="green" width={90} y={0} x={23} />
 
-      <Text ref={statusRef} fill="white" fontSize={14} text={task.status} />
+      <Text
+        ref={statusRef}
+        fill="white"
+        fontSize={14}
+        text={task.status}
+        listening={false}
+      />
       <Image
         width={20}
         height={20}
         cornerRadius={50}
         image={image}
+        listening={false}
         ref={imageRef}
       />
       <Text ref={userRef} fill="white" fontSize={14} text={task.user} />
