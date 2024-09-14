@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { useEffect, useRef } from "react";
 import { Layer, Line, Rect, Stage, Transformer } from "react-konva";
-import { useStage } from "../../hooks/useStage";
+import { useStage, stageStyle } from "../../hooks/useStage";
 import { useCanvasStore } from "../../store/canvasStore";
 import { CanvasToolBar } from "./CanvasToolBar";
 import { CanvasContextMenu } from "./CanvasContextMenu";
@@ -16,6 +16,7 @@ export const Canvas = () => {
   const layerRef = useRef<Konva.Layer>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
+  console.log({ shapes });
 
   const selectedItem = useCanvasStore((state) => state.selectedItem);
   const setSelectedItem = useCanvasStore((state) => state.setSelectedItem);
@@ -46,7 +47,7 @@ export const Canvas = () => {
   }, [selectedItem]);
 
   useEffect(() => {
-    // drawGridOnLayer(layerRef.current!);
+    drawGridOnLayer(layerRef.current!);
   }, [isStageCleared]);
 
   const tasks = [
@@ -104,7 +105,6 @@ export const Canvas = () => {
         x={stageX}
         y={stageY}
         draggable={isStageDraggable}
-        // style={stageStyle}
         onWheel={handleWheel}
         id="mainContainer"
         width={window.innerWidth}
@@ -148,10 +148,10 @@ export const Canvas = () => {
             layerDragMove(e, stageRef.current!, layerRef.current!);
           }}
           onDragEnd={() => {
-            // layerDragEnd(layerRef.current!);
+            layerDragEnd(layerRef.current!);
           }}
         >
-          {/* {...shapes} */}
+          {...shapes}
           {tasks.map((t) => {
             return <Task task={t} />;
           })}

@@ -22,7 +22,7 @@ export const Task = (props: Task) => {
   const imageRef = useRef<Konva.Image>(null);
   const titleRef = useRef<Konva.Text>(null);
   const statusBgRef = useRef<Konva.Rect>(null);
-  const [image] = useImage(task.avatar);
+  const [image] = useImage(task.avatar, "anonymous");
 
   const updateTaskShape = useCallback(() => {
     if (groupRef.current && statusRef.current) {
@@ -78,7 +78,14 @@ export const Task = (props: Task) => {
       listening={true}
       ref={groupRef}
     >
-      <Rect x={0} y={0} width={420} height={150} fill="#f14e0d"></Rect>
+      <Rect
+        x={0}
+        y={0}
+        width={420}
+        height={150}
+        fill="#f14e0d"
+        zIndex={500}
+      ></Rect>
       <Text
         text={task.title}
         fill="white"
